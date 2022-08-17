@@ -18,15 +18,13 @@ pipeline {
                 sh 'mvn clean package'  
             }
         }
-        stage ('Deploy') {
-            steps{
-            sshagent(credentials : ['tomcat']) {
-                sh 'ssh -o StrictHostKeyChecking=no root@192.168.1.52 uptime'
-                sh 'ssh -v root@192.168.1.52'
-                sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.52:/usr/libexec/tomcat9/webapps/webapps.war'
-            }
-        }
-      }
+        stage ('Deploy-To-Tomcat') {
+            steps {
+           sshagent(['tomcat']) {
+                sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.52:/usr/libexec/tomcat9/webapps/'
+              }      
+           }       
+       }
     
     }
 }
