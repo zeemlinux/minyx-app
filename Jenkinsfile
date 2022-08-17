@@ -18,7 +18,7 @@ pipeline {
                 sh 'mvn clean package'  
             }
         }
-        stage ('Deploy-to-Tomcat') {
+        stage ('Deploy-To-Tomcat') {
             steps {
            sshagent(['tomcat']) {
                 sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.52:/usr/libexec/tomcat9/webapps/webapp.war'
