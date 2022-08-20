@@ -15,7 +15,7 @@ pipeline {
 		stage ('Check-Git-Secrets') {
 		    steps {
 	        sh 'rm trufflehog || true'
-		sh 'docker pull gesellix/trufflehog'
+		sh 'docker pull trufflesecurity/trufflehog'
 		sh 'docker run -it -v "$PWD:/pwd" ghcr.io/trufflesecurity/trufflehog:latest --json github --repo https://github.com/zeemlinux/minyx-app.git --debug > trufflehog'
 		sh 'cat trufflehog'
 	    }
