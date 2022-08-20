@@ -16,7 +16,7 @@ pipeline {
 		    steps {
 	        sh 'rm trufflehog || true'
 		sh 'docker pull gesellix/trufflehog'
-		sh 'docker run -t gesellix/trufflehog --json https://github.com/zeemlinux/minyx-app.git > trufflehog'
+		sh 'docker run -it -v "$PWD:/pwd" ghcr.io/trufflesecurity/trufflehog:latest --json github --repo https://github.com/zeemlinux/minyx-app --debug > trufflehog'
 		sh 'cat trufflehog'
 	    }
 	 }
