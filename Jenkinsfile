@@ -19,13 +19,21 @@ pipeline {
 		sh 'docker run -t gesellix/trufflehog --json https://github.com/zeemlinux/minyx-app.git > trufflehog'
 		sh 'cat trufflehog'
 	    }
-	    }
+	}
 
 	    stage ('Build') {
             steps {
                 sh 'mvn clean package'
             }
         }
+        
+        stage ('Deploy-To-Tomcat') {
+            steps {
+           sshagent(['tomcat']) {
+                sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.51:/opt/tomcat/webapps/webapp.war'
+              }      
+           } 
+	   }       
 
 		stage ('Source-Composition-Analysis') {
 		steps {
@@ -34,14 +42,8 @@ pipeline {
 		     sh 'chmod +x owasp-dependency-check.sh'
 		     sh 'bash owasp-dependency-check.sh'
 		     sh 'cat /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml'
-		}
-	}
-		stage ('Deploy-To-Tomcat') {
-            steps {
-           sshagent(['tomcat']) {
-                sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.51:/opt/tomcat/webapps/webapp.war'
-              }      
-           } 
-	}         
+		    }
+	    }
+		  
     }
 }
