@@ -29,7 +29,7 @@ pipeline {
         stage ('Deploy-To-Tomcat') {
             steps {
            sshagent(['deployer']) {
-                sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.51:/opt/tomcat/webapps/webapp.war'
+                sh 'scp -o StrictHostKeyChecking=no target/*.war deployer@192.168.1.51:/opt/tomcat/webapps/webapp.war'
               }      
            } 
 	   }  
@@ -41,6 +41,7 @@ pipeline {
 		     sh 'wget https://raw.githubusercontent.com/devopssecure/webapp/master/owasp-dependency-check.sh'	
 		     sh 'chmod +x owasp-dependency-check.sh'
 		     sh 'bash owasp-dependency-check.sh'
+             sh 'cat /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml'
 		    }
 	    }
         stage ('Port Scan') {
