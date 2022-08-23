@@ -26,7 +26,13 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-        
+        stage ('Deploy-To-Tomcat') {
+            steps {
+           sshagent(['deployer']) {
+                sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.51:/opt/tomcat/webapps/webapp.war'
+              }      
+           } 
+	   }  
              
 
 		stage ('Source-Composition-Analysis') {
@@ -53,13 +59,7 @@ pipeline {
 			    }
 			}
 		}
-        stage ('Deploy-To-Tomcat') {
-            steps {
-           sshagent(['deployer']) {
-                sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.51:/opt/tomcat/webapps/webapp.war'
-              }      
-           } 
-	   }  
+        
 		  
     }
 }
