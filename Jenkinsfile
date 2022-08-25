@@ -28,22 +28,12 @@ pipeline {
         }
         stage ('Deploy-To-Tomcat') {
             steps {
-           sshagent(['docker']) {
-                sh 'scp -o StrictHostKeyChecking=no target/*.war dockeradmin@192.168.1.51:/opt/tomcat/webapps/webapp.war'
+           sshagent(['tomcat']) {
+                sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.51:/opt/tomcat/webapps/webapp.war'
               }      
            } 
 	   }  
-             
-
-		stage ('Source-Composition-Analysis') {
-		    steps {
-		     sh 'rm owasp-* || true'
-		     sh 'wget https://raw.githubusercontent.com/devopssecure/webapp/master/owasp-dependency-check.sh'	
-		     sh 'chmod +x owasp-dependency-check.sh'
-		     sh 'bash owasp-dependency-check.sh'
-             sh 'cat /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml'
-		    }
-	    }
+           
         stage ('Port Scan') {
 		    steps {
 			sh 'rm nmap* || true'
