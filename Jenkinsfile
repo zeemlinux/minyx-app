@@ -33,10 +33,7 @@ pipeline {
 			sh 'cat nmap'
 		    }
 	    }
-<<<<<<< HEAD
-        
-		  
-=======
+      
 	    
 	    stage ('DAST') {
 		  
