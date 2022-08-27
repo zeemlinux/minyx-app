@@ -68,7 +68,7 @@ pipeline {
        }     
 		stage ('SSL Checks') {
 		    steps {
-			sh 'docker run --rm -i nablac0d3/sslyze:5.0.0 192.168.1.51 --json_out sslyze-output.json'
+			sh 'docker run --rm -i nablac0d3/sslyze:5.0.0 192.168.1.51 --json_out sslyze-output.json || true'
 			sh 'cat sslyze-output.json'
 		    }
 	    }  
