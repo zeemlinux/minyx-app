@@ -20,19 +20,11 @@ pipeline {
 		sh 'cat trufflehog'
 	    }
 	}
-
 	    stage ('Build') {
             steps {
                 sh 'mvn clean package'
             }
         }
-        stage ('Deploy-To-Tomcat') {
-            steps {
-           sshagent(['tomcat']) {
-                sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.51:/opt/tomcat/webapps/webapp.war'
-              }      
-           } 
-	   }  
            
         stage ('Port Scan') {
 		    steps {
@@ -41,7 +33,50 @@ pipeline {
 			sh 'cat nmap'
 		    }
 	    }
+<<<<<<< HEAD
         
 		  
+=======
+	    
+	    stage ('DAST') {
+		  
+		    	steps {
+			    sshagent(['jenkins']) {
+				    sh 'ssh -o StrictHostKeyChecking=no root@192.168.1.50 "docker run -t owasp/zap2docker-stable zap-baseline.py -t http://192.168.1.51:8080/webapp/" || true'
+			    }
+			}
+		}
+        stage ('SAST') {
+		steps {
+		withSonarQubeEnv('sonar') {
+			sh 'mvn sonar:sonar'
+			sh 'cat target/sonar/report-task.txt'
+		       }
+		}
+	}
+	    stage ('Nikto Scan') {
+		    steps {
+			sh 'rm nikto-output.xml || true'
+			sh 'docker pull secfigo/nikto:latest'
+			sh 'docker run --user $(id -u):$(id -g) --rm -v $(pwd):/report -i secfigo/nikto:latest -h 192.168.1.50 -p 8080 -output /report/nikto-output.xml'
+			sh 'cat nikto-output.xml'   
+		    }
+	    }
+	   stage ('Deploy-To-Tomcat') {
+            steps {
+           sshagent(['tomcat']) {
+                sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.51:/opt/tomcat/webapps/webapp.war'
+              }      
+           } 
+       }     
+		stage ('SSL Checks') {
+		    steps {
+			sh 'pip install --upgrade pip setuptools wheel'
+			sh 'pip install --upgrade sslyze'
+			sh 'python -m sslyze --regular 192.168.1.51:8080 --json_out sslyze-output.json'
+			sh 'cat sslyze-output.json'
+		    }
+	    }  
+
     }
 }
