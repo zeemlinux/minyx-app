@@ -71,9 +71,7 @@ pipeline {
        }     
 		stage ('SSL Checks') {
 		    steps {
-			sh 'pip install --upgrade pip setuptools wheel'
-			sh 'pip install --upgrade sslyze'
-			sh 'python -m sslyze --regular 192.168.1.51:8080 --json_out sslyze-output.json'
+			sh 'docker run --rm -it nablac0d3/sslyze:5.0.0 192.168.1.51'
 			sh 'cat sslyze-output.json'
 		    }
 	    }  
