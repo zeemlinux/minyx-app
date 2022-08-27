@@ -20,15 +20,11 @@ pipeline {
 		sh 'cat trufflehog'
 	    }
 	}
-
-	   
-        stage ('Deploy-To-Tomcat') {
+	    stage ('Build') {
             steps {
-           sshagent(['tomcat']) {
-                sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.51:/opt/tomcat/webapps/webapp.war'
-              }      
-           } 
-	   }  
+                sh 'mvn clean package'
+            }
+        }
            
         stage ('Port Scan') {
 		    steps {
@@ -62,11 +58,13 @@ pipeline {
 			sh 'cat nikto-output.xml'   
 		    }
 	    }
-	     stage ('Build') {
+	   stage ('Deploy-To-Tomcat') {
             steps {
-                sh 'mvn clean package'
-            }
-        }
+           sshagent(['tomcat']) {
+                sh 'scp -o StrictHostKeyChecking=no target/*.war root@192.168.1.51:/opt/tomcat/webapps/webapp.war'
+              }      
+           } 
+       }     
 		  
     }
 }
