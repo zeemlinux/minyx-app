@@ -66,10 +66,16 @@ pipeline {
               }      
            } 
        }     
-		stage ('SSL Checks') {
+		stage ('Upload Reports to Defect Dojo') {
 		    steps {
-			sh 'docker run --rm -i nablac0d3/sslyze:5.0.0 192.168.1.51 --json_out sslyze-output.json || true'
-			sh 'cat sslyze-output.json'
+			sh 'pip install requests'
+			sh 'wget https://raw.githubusercontent.com/devopssecure/webapp/master/upload-results.py'
+			sh 'chmod +x upload-results.py'
+			sh 'python upload-results.py --host 192.168.1.51 --api_key a13b6e9af412eb32dfe2771b264164d9fc3a8297 --engagement_id 4 --result_file trufflehog --username admin --scanner "SSL Labs Scan"'
+			sh 'python upload-results.py --host 192.168.1.51 --api_key a13b6e9af412eb32dfe2771b264164d9fc3a8297 --engagement_id 4 --result_file /var/lib/jenkins/OWASP-Dependency-Check/reports/dependency-check-report.xml --username admin --scanner "Dependency Check Scan"'
+			sh 'python upload-results.py --host 192.168.1.51 --api_key a13b6e9af412eb32dfe2771b264164d9fc3a8297 --engagement_id 4 --result_file nmap --username admin --scanner "Nmap Scan"'
+			sh 'python upload-results.py --host 192.168.1.51 --api_key a13b6e9af412eb32dfe2771b264164d9fc3a8297 --engagement_id 4 --result_file nikto-output.xml --username admin'
+			    
 		    }
 	    }  
 
