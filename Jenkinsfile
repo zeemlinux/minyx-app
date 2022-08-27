@@ -21,11 +21,7 @@ pipeline {
 	    }
 	}
 
-	    stage ('Build') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
+	   
         stage ('Deploy-To-Tomcat') {
             steps {
            sshagent(['tomcat']) {
@@ -66,6 +62,11 @@ pipeline {
 			sh 'cat nikto-output.xml'   
 		    }
 	    }
+	     stage ('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
 		  
     }
 }
